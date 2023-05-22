@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 @Table(indexes = {
         @Index(columnList = "base_id, target_id", unique = true)
 })
+@DynamicUpdate
 public class ExchangeRate extends BaseEntity {
   @ManyToOne
   private Currency base;
