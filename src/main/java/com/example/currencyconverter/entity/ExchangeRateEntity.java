@@ -13,7 +13,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
+@Entity(name = "exchange_rate")
+@DynamicUpdate
 @Table(indexes = {
         @Index(columnList = "base_id, target_id", unique = true)
 })
