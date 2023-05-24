@@ -20,9 +20,14 @@ import java.math.BigDecimal;
 })
 public class ExchangeRateEntity extends BaseEntity {
 
-  @OneToOne
-  private Currency target;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private CurrencyEntity base;
 
-  @Column(columnDefinition = "NUMERIC(6)", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private CurrencyEntity target;
+
+  @Column(nullable = false, columnDefinition = "numeric(38,6)")
   private BigDecimal rate;
 }
