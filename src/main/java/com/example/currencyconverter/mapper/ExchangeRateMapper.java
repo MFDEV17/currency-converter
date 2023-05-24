@@ -24,7 +24,7 @@ public abstract class ExchangeRateMapper {
   public abstract List<ExchangeRateRequest> fromEntityListToDto(List<ExchangeRateEntity> entityList);
 
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "base", expression = "java(currencyRepository.findByCodeIgnoreCase(request.getBaseCurrencyCode()).orElseThrow(() -> new com.example.currencyconverter.exception.CurrencyNotFoundException(String.format(\"Currency %s were not found\", request.getBaseCurrencyCode()))))")
-  @Mapping(target = "target", expression = "java(currencyRepository.findByCodeIgnoreCase(request.getTargetCurrencyCode()).orElseThrow(() -> new com.example.currencyconverter.exception.CurrencyNotFoundException(String.format(\"Currency %s were not found\", request.getTargetCurrencyCode()))))")
+  @Mapping(target = "base", expression = "java(currencyRepository.findByCodeIgnoreCase(request.getBaseCurrencyCode()).orElseThrow(() -> new com.example.currencyconverter.exception.CurrencyNotFoundException(request.getBaseCurrencyCode())))")
+  @Mapping(target = "target", expression = "java(currencyRepository.findByCodeIgnoreCase(request.getTargetCurrencyCode()).orElseThrow(() -> new com.example.currencyconverter.exception.CurrencyNotFoundException(request.getTargetCurrencyCode())))")
   public abstract ExchangeRateEntity fromCreateRequestToEntity(CreateExchangeRequest request);
 }
