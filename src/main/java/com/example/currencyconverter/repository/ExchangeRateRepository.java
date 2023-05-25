@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ExchangeRateRepository extends JpaRepository<ExchangeRateEntity, Long> {
 
@@ -35,5 +37,5 @@ public interface ExchangeRateRepository extends JpaRepository<ExchangeRateEntity
           @Param("amount") int amount
   );
 
-  ExchangeRateEntity findByBaseAndTarget(CurrencyEntity base, CurrencyEntity target);
+  Optional<ExchangeRateEntity> findByBaseAndTarget(CurrencyEntity base, CurrencyEntity target);
 }

@@ -6,6 +6,7 @@ import com.example.currencyconverter.dto.UpdateExchangeRateRequest;
 import com.example.currencyconverter.entity.CurrencyEntity;
 import com.example.currencyconverter.entity.ExchangeRateEntity;
 import com.example.currencyconverter.exception.CurrencyNotFoundException;
+import com.example.currencyconverter.exception.ExchangeRateNotFoundException;
 import com.example.currencyconverter.mapper.ExchangeRateMapper;
 import com.example.currencyconverter.projection.ExchangeRateProjection;
 import com.example.currencyconverter.projection.ExchangeRateProjectionWithAmount;
@@ -71,15 +72,18 @@ public class ExchangeRateService {
     String base = pair[0];
     String target = pair[1];
 
-    CurrencyEntity baseCurrency = currencyRepository.findByCodeIgnoreCase(base)
+    CurrencyEntity baseCurrency = currencyRepository
+            .findByCodeIgnoreCase(base)
             .orElseThrow(() -> new CurrencyNotFoundException(base));
 
-    CurrencyEntity targetCurrency = currencyRepository.findByCodeIgnoreCase(target)
+    CurrencyEntity targetCurrency = currencyRepository
+            .findByCodeIgnoreCase(target)
             .orElseThrow(() -> new CurrencyNotFoundException(target));
 
-    ExchangeRateEntity toUpdate = exchangeRateRepository
-            .findByBaseAndTarget(baseCurrency, targetCurrency);
-
+    ExchangeRateEntity toUpdate =
+            exchangeRateRepository
+                    .findByBaseAndTarget(baseCurrency, targetCurrency)
+                    .orElseThrow(() -> new ExchangeRateNotFoundException(base, target));
     toUpdate.setRate(request.getNewRate());
 
     exchangeRateRepository.save(toUpdate);
@@ -89,8 +93,8 @@ public class ExchangeRateService {
 
   @Transactional(isolation = SERIALIZABLE, readOnly = true)
   public ResponseEntity<?> makeExchange(String from, String to, int amount) {
-    ExchangeRateProjectionWithAmount result
-            = exchangeRateRepository.findByCodePair_ExchangeProjectionWithAmount(from, to, amount);
+    ExchangeRateProjectionWithAmount result = exchangeRateRepository
+            .findByCodePair_ExchangeProjectionWithAmount(from, to, amount);
 
     return ResponseEntity.ok(result);
   }
