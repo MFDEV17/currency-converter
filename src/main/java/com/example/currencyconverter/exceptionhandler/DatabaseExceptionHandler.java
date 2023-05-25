@@ -1,6 +1,7 @@
 package com.example.currencyconverter.exceptionhandler;
 
 import com.example.currencyconverter.exception.CurrencyNotFoundException;
+import com.example.currencyconverter.exception.ExchangeRateNotFoundException;
 import com.example.currencyconverter.util.ServiceUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -40,6 +41,11 @@ public class DatabaseExceptionHandler {
   @ExceptionHandler(CurrencyNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected ResponseEntity<?> onCurrencyNotFound(CurrencyNotFoundException ex) {
+    return ResponseEntity.status(400).body(ex.getMessage());
+  }
+
+  @ExceptionHandler(ExchangeRateNotFoundException.class)
+  protected ResponseEntity<?> onExchangeNotFound(ExchangeRateNotFoundException ex) {
     return ResponseEntity.status(400).body(ex.getMessage());
   }
 
