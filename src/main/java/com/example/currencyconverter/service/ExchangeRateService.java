@@ -111,7 +111,6 @@ public class ExchangeRateService {
                         return getRate().multiply(BigDecimal.valueOf(amount));
                       }
 
-
                       @Override
                       public Currency getBaseCurrency() {
                         return reverseExchange.getBaseCurrency();
