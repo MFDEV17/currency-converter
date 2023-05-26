@@ -19,8 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import static java.math.RoundingMode.HALF_EVEN;
 import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @Service
@@ -47,7 +49,8 @@ public class ExchangeRateService {
     String[] pair = ServiceUtil.halfCodePair(codePair);
 
     ExchangeRateProjection exchangeRate
-            = exchangeRateRepository.findByCodePair_ExchangeRateProjection(pair[0], pair[1]);
+            = exchangeRateRepository.findByCodePair_ExchangeRateProjection(pair[0], pair[1])
+            .orElseThrow(() -> new ExchangeRateNotFoundException(pair[0], pair[1]));
 
     return ResponseEntity.ok(exchangeRate);
   }
@@ -94,7 +97,38 @@ public class ExchangeRateService {
   @Transactional(isolation = SERIALIZABLE, readOnly = true)
   public ResponseEntity<?> makeExchange(String from, String to, int amount) {
     ExchangeRateProjectionWithAmount result = exchangeRateRepository
-            .findByCodePair_ExchangeProjectionWithAmount(from, to, amount);
+            .findByCodePair_ExchangeProjectionWithAmount(from, to, amount)
+            .or(() -> exchangeRateRepository
+                    .findByCodePair_ExchangeProjectionWithAmount(to, from, 1)
+                    .map(reverseExchange -> new ExchangeRateProjectionWithAmount() {
+                      @Override
+                      public Long getId() {
+                        return null;
+                      }
+
+                      @Override
+                      public BigDecimal getConvertedAmount() {
+                        return getRate().multiply(BigDecimal.valueOf(amount));
+                      }
+
+
+                      @Override
+                      public Currency getBaseCurrency() {
+                        return reverseExchange.getBaseCurrency();
+                      }
+
+                      @Override
+                      public Currency getTargetCurrency() {
+                        return reverseExchange.getTargetCurrency();
+                      }
+
+                      @Override
+                      public BigDecimal getRate() {
+                        return BigDecimal.ONE.divide(reverseExchange.getRate(), 6, HALF_EVEN);
+                      }
+                    })
+            )
+            .orElseThrow(() -> new ExchangeRateNotFoundException(from, to));
 
     return ResponseEntity.ok(result);
   }

@@ -21,7 +21,7 @@ public interface ExchangeRateRepository extends JpaRepository<ExchangeRateEntity
           "e.id as id " +
           "from exchange_rate e " +
           "where e.base.code = upper(?1) and e.target.code = upper(?2)")
-  ExchangeRateProjection findByCodePair_ExchangeRateProjection(String baseCode, String targetCode);
+  Optional<ExchangeRateProjection> findByCodePair_ExchangeRateProjection(String baseCode, String targetCode);
 
   @Query("select " +
           "e.rate * :amount as convertedAmount," +
@@ -31,7 +31,7 @@ public interface ExchangeRateRepository extends JpaRepository<ExchangeRateEntity
           "e.id as id " +
           "from exchange_rate e " +
           "where e.base.code = upper(:from) and e.target.code = upper(:to)")
-  ExchangeRateProjectionWithAmount findByCodePair_ExchangeProjectionWithAmount(
+  Optional<ExchangeRateProjectionWithAmount> findByCodePair_ExchangeProjectionWithAmount(
           @Param("from") String from,
           @Param("to") String to,
           @Param("amount") int amount
